@@ -8,6 +8,8 @@ namespace DIO.Projeto.Series.Repository
                  
          T ObterPorId(int i);
 
+        T ObterPorNome(string n);
+
          bool Alterar(T i);
          
          bool Remover(T item);
