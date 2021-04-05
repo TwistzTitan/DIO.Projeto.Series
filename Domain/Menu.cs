@@ -2,6 +2,7 @@ using DIO.Projeto.Series.Domain.Series;
 using DIO.Projeto.Series.Repository;
 using DIO.Projeto.Series.Service;
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Threading;
 
@@ -17,8 +18,12 @@ namespace DIO.Projeto.Series.Domain
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("\t#### Bem vindo a DIO Series ####\n");
-            
-            Roteador(ApresentaOpcoesMenu());
+            bool chaveMenu = true;
+            while (chaveMenu)
+            {
+
+                Roteador(ApresentaOpcoesMenu(),out chaveMenu);
+            }
 
 
             
@@ -53,8 +58,10 @@ namespace DIO.Projeto.Series.Domain
             return opcao;
         }
 
-        public static void Roteador(int opcao)
+        public static void Roteador(int opcao, out bool menu)
         {
+            menu = false;
+
             switch (opcao)
             {
 
@@ -79,13 +86,19 @@ namespace DIO.Projeto.Series.Domain
                     }
                     try
                     {
-                        serieService.CadastrarSerie(new Serie(nome, desc, url));
+                        serieService.CadastrarSerie(new Serie() { SerieNome = nome , SerieDescricao = desc, SerieURL = url});
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
                     }
+                    finally
+                    {
 
+                        Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
+                        var retorno = Console.ReadLine();
+                        menu = retorno.Contains('S') ? true : false;
+                    }
                     break;
                 case 2:
                     try
@@ -96,6 +109,8 @@ namespace DIO.Projeto.Series.Domain
                         {
                             Console.Clear();
                             Console.WriteLine("\n\t ### DIO Series disponíveis ###");
+
+                            Console.WriteLine("\n\tID | Nome da Série | Avaliação | URL");
                             foreach (Serie i in listaSeries)
                             {
                                 Console.WriteLine("\n\t {0} | {1} | {2} | {3} |", i.SerieID, i.SerieNome, i.SerieAvaliacao, i.SerieURL);
@@ -113,7 +128,9 @@ namespace DIO.Projeto.Series.Domain
                     }
                     finally
                     {
-                        Console.WriteLine("Deseja retornar ao menu?");
+                        Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
+                        var retorno = Console.ReadLine();
+                        menu = retorno.Contains('S') ? true : false;
                     }
                     
                     break;
@@ -132,6 +149,13 @@ namespace DIO.Projeto.Series.Domain
                     {
                         Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
                     }
+                    finally
+                    {
+
+                        Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
+                        var retorno = Console.ReadLine();
+                        menu = retorno.Contains('S') ? true : false;
+                    }
                     break;
                 case 4:
                     Console.Clear();
@@ -149,7 +173,13 @@ namespace DIO.Projeto.Series.Domain
                     {
                         Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
                     }
+                    finally
+                    {
 
+                        Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
+                        var retorno = Console.ReadLine();
+                        menu = retorno.Contains('S') ? true : false;
+                    }
 
                     break;
                 case 5:
@@ -160,17 +190,31 @@ namespace DIO.Projeto.Series.Domain
                     {
                         Serie s = serieService.BuscarSerie(nome);
                         if (s.TemURL)
+                        {   
+
+                            Process.Start(fileName: ConfigurationManager.AppSettings["SerieNavegador"], s.SerieURL);
+                        }
+                        else
                         {
-                            Process.Start("IExplore.exe",s.SerieURL);
+                            Console.WriteLine("Volte ao menu e adicione uma URL(link) para a série!");
                         }
                     }
                     catch(Exception e)
                     {
                         Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
                     }
+                    finally
+                    {
+
+                        Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
+                        var retorno = Console.ReadLine();
+                        menu = retorno.Contains('S') ? true : false;
+                        
+                    }
                     break;
                 case 6:
-                    Console.WriteLine("Obrigado por utilizar a DIO Series");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("\n\t### Obrigado por utilizar a DIO Series ###");
                     Environment.Exit(0);
                     break;
             }

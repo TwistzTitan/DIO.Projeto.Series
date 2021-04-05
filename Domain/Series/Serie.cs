@@ -13,17 +13,17 @@ namespace DIO.Projeto.Series.Domain.Series
         [Index]
         public int SerieID {get; set;}
         [Required]
-        public string SerieNome {get ; private set;}
+        public string SerieNome {get ; set;}
         [Required]
-        public string SerieDescricao {get; private set;}
+        public string SerieDescricao {get; set;}
         
-        public string SerieURL {get ; private set;}
+        public string SerieURL {get ; set;}
 
         public double SerieAvaliacao {get ; set;}
 
         public int TotalAvaliacao {get; set;}
 
-        public int SerieStatus { get; private set; }
+        public int SerieStatus { get; set; }
         
         [NotMapped]
         public SerieService serieService { 
@@ -32,12 +32,8 @@ namespace DIO.Projeto.Series.Domain.Series
         }
         [NotMapped]
         public bool TemURL { get { return !String.IsNullOrEmpty(SerieURL); } private set { }  }
-        public Serie(string nome,string desc, string url)
+        public Serie()
         {
-            
-            this.SerieNome = nome;
-            this.SerieDescricao = desc;
-            this.SerieURL = url;
             this.SerieStatus = 1;
         }
         

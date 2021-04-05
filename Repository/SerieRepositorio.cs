@@ -1,7 +1,6 @@
 ﻿using DIO.Projeto.Series.Domain.Series;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace DIO.Projeto.Series.Repository
@@ -16,15 +15,16 @@ namespace DIO.Projeto.Series.Repository
         {
             bool retorno = true;
             
-            using (var ctx = new SerieContext())
+            using (var ctx = new EntretenimentoDBContext())
             {
                 try
                 {
                     ctx.Series.Add(item);
                     ctx.SaveChanges();
                 }
-                catch(Exception)
+                catch(Exception e)
                 {
+                    Console.WriteLine("Erro na operação: {0}", e.Message);
                     retorno = false;
                 }
                 
@@ -35,12 +35,22 @@ namespace DIO.Projeto.Series.Repository
 
         public List<Serie> Listar()
         {
-
-            using (SerieContext ctx = new SerieContext())
+            using (var ctx = new EntretenimentoDBContext())
             {
-                return ctx.Series.ToList();
+
+                try
+                {
+                    return ctx.Series.ToList();
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
             }
             
+
+           
+
         }
 
         public Serie ObterPorId(int i)
@@ -61,8 +71,7 @@ namespace DIO.Projeto.Series.Repository
             {
                 try
                 {
-                    Serie oldS = ctx.Series.Find(item.SerieID);
-                    oldS = item;
+                    ctx.Series.Update(item);
                     ctx.SaveChanges();
                 }
                 catch (Exception)
@@ -84,7 +93,7 @@ namespace DIO.Projeto.Series.Repository
 
             using(SerieContext ctx = new SerieContext())
             {
-                s = ctx.Series.Find(n);
+                s = ctx.Series.Select(x => x).Where(x => x.SerieNome == n).FirstOrDefault();
             }
             return s;
         }
