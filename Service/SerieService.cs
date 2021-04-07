@@ -17,11 +17,11 @@ namespace DIO.Projeto.Series.Service
 
         public void AvaliarSerie(Serie serie, double av)
         {
-            Debug.Assert(!av.Equals(null) && (av > 0 && av < 10));
+            Debug.Assert(!av.Equals(null) && (av > 0 && av <= 10));
 
             serie.TotalAvaliacao++;
 
-            serie.SerieAvaliacao += av / serie.TotalAvaliacao;
+            serie.SerieAvaliacao = (av+serie.SerieAvaliacao) / serie.TotalAvaliacao;
 
             serieRepositorio.Alterar(serie);
         }
@@ -72,6 +72,17 @@ namespace DIO.Projeto.Series.Service
         public Serie BuscarSerie(string nome)
         {
             return serieRepositorio.ObterPorNome(nome);
+        }
+
+        public Serie BuscarSerie(int i)
+        {
+            return serieRepositorio.ObterPorId(i);
+        }
+
+        public bool TemSeries()
+        {
+            return (ListarSeries() != null) ? true : false;
+            
         }
     }
 }

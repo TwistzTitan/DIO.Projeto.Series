@@ -32,24 +32,28 @@ namespace DIO.Projeto.Series.Domain
         public static int ApresentaOpcoesMenu()
         {
             
-            int opcao = 0;
+            int opcao;
             while (true)
             {
-                Console.ForegroundColor = ConsoleColor.Blue;
+                Thread.Sleep(2000);
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("\n\t Escolha uma das opções do DIO Menu \n");
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("\n\t [1] - Adicionar Série");
                 Console.WriteLine("\n\t [2] - Listar Séries");
                 Console.WriteLine("\n\t [3] - Editar Série");
                 Console.WriteLine("\n\t [4] - Avaliar Série");
                 Console.WriteLine("\n\t [5] - Abrir Série");
                 Console.WriteLine("\n\t [6] - Sair");
+                Console.ResetColor();
                 opcao = int.Parse(Console.ReadLine());
 
                 if (!opcao.Equals(null) && (opcao > 0 && opcao < 7)) break;
                 else 
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\n Escolha um op��o v�lida por favor! \n");
+                    Console.WriteLine("\n Escolha um opção válida por favor! \n");
                     Thread.Sleep(3000);
                     Console.Clear();
                 } 
@@ -72,12 +76,17 @@ namespace DIO.Projeto.Series.Domain
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("\n\t Preencha as informações da série para que possamos cadastrá-la com sucesso! \n");
-                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("\n Nome da série :");
+                        Console.ResetColor();
                         nome = Console.ReadLine();
+                        Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("\n Descrição da série :");
+                        Console.ResetColor();
                         desc = Console.ReadLine();
+                        Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("\n URL para série :");
+                        Console.ResetColor();
                         url = Console.ReadLine();
                         if (!String.IsNullOrEmpty(nome) && !String.IsNullOrEmpty(desc)) break;
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -96,25 +105,27 @@ namespace DIO.Projeto.Series.Domain
                     {
 
                         Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
-                        var retorno = Console.ReadLine();
-                        menu = retorno.Contains('S') ? true : false;
+                        var retorno = Console.ReadLine().ToLower() ;
+                        menu = retorno.Contains('s') ? true : false;
                     }
                     break;
                 case 2:
                     try
                     {
-                        var listaSeries = serieService.ListarSeries();
 
-                        if (listaSeries != null)
+                        if (serieService.TemSeries())
                         {
                             Console.Clear();
-                            Console.WriteLine("\n\t ### DIO Series disponíveis ###");
-
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine("\n\t ### DIO Series ###");
+                            Console.ForegroundColor = ConsoleColor.Blue;
                             Console.WriteLine("\n\tID | Nome da Série | Avaliação | URL");
-                            foreach (Serie i in listaSeries)
+                            
+                            foreach (Serie i in serieService.ListarSeries())
                             {
                                 Console.WriteLine("\n\t {0} | {1} | {2} | {3} |", i.SerieID, i.SerieNome, i.SerieAvaliacao, i.SerieURL);
                             }
+                            Console.ResetColor();
                         }
                         else
                         {
@@ -137,84 +148,148 @@ namespace DIO.Projeto.Series.Domain
                 case 3:
 
                     Console.Clear();
-                    Console.WriteLine("Informe o nome da serie que você deseja editar\n");
-                    nome = Console.ReadLine();
-                    try
+                    if (serieService.TemSeries())
                     {
-                        Serie s = serieService.BuscarSerie(nome);
-                        serieService.EditarSerie(s);
-                        Console.WriteLine("Edição concluída com sucesso.");
+
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("Informe o numero da serie que você deseja editar\n");
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        foreach (Serie i in serieService.ListarSeries())
+                        {
+                            Console.WriteLine("\n\t {0} | {1} | {2} | {3} |", i.SerieID, i.SerieNome, i.SerieAvaliacao, i.SerieURL);
+                        }
+                        Console.ResetColor();
+                        int id = int.Parse(Console.ReadLine());
+                        try
+                        {
+                            Serie s = serieService.BuscarSerie(id);
+                            serieService.EditarSerie(s);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Edição concluída com sucesso.");
+                            Console.ResetColor();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
+                        }
+                        finally
+                        {
+
+                            Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
+                            var retorno = Console.ReadLine().ToLower();
+                            menu = retorno.Contains('s') ? true : false;
+                        }
                     }
-                    catch(Exception e)
-                    {
-                        Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
-                    }
-                    finally
+                    else
                     {
 
                         Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
-                        var retorno = Console.ReadLine();
-                        menu = retorno.Contains('S') ? true : false;
+                        var retorno = Console.ReadLine().ToLower();
+                        menu = retorno.Contains('s') ? true : false;
                     }
                     break;
                 case 4:
                     Console.Clear();
-                    Console.WriteLine("Informe o nome da serie que você deseja avaliar");
-                    nome = Console.ReadLine();
-                    try
+                    if (serieService.TemSeries())
                     {
-                        Serie serie = serieService.BuscarSerie(nome);
-                        Console.WriteLine("Informe qual a nota de avaliação:\n");
-                        double nota = double.Parse(Console.ReadLine());
-                        serieService.AvaliarSerie(serie, nota);
-                        Console.WriteLine("Avaliação realizada concluída.");
-                    }   
-                    catch(Exception e)
-                    {
-                        Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
-                    }
-                    finally
-                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("Informe o numero da serie que você deseja avaliar");
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        foreach (Serie i in serieService.ListarSeries())
+                        {
+                            Console.WriteLine("\n\t {0} | {1} | {2} | {3} |", i.SerieID, i.SerieNome, i.SerieAvaliacao, i.SerieURL);
+                        }
 
+                        int id = int.Parse(Console.ReadLine());
+                        try
+                        {
+                            Serie serie = serieService.BuscarSerie(id);
+                            Console.WriteLine("Informe qual a nota de avaliação:\n");
+                            double nota = double.Parse(Console.ReadLine());
+                            serieService.AvaliarSerie(serie, nota);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Avaliação realizada concluída.");
+                            Console.ResetColor();
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
+                        }
+                        finally
+                        {
+
+                            Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
+                            var retorno = Console.ReadLine();
+                            menu = retorno.Contains('S') ? true : false;
+                        }
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\n\t Você ainda não possui séries cadastradas!");
+                        Console.ResetColor();
                         Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
-                        var retorno = Console.ReadLine();
-                        menu = retorno.Contains('S') ? true : false;
+                        var retorno = Console.ReadLine().ToLower();
+                        menu = retorno.Contains('s') ? true : false;
                     }
-
                     break;
                 case 5:
                     Console.Clear();
-                    Console.WriteLine("Informe o nome da serie que você deseja abrir\n");
-                    nome = Console.ReadLine();
-                    try
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("Informe o numero da serie que você deseja abrir\n");
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    if (serieService.TemSeries())
                     {
-                        Serie s = serieService.BuscarSerie(nome);
-                        if (s.TemURL)
-                        {   
-
-                            Process.Start(fileName: ConfigurationManager.AppSettings["SerieNavegador"], s.SerieURL);
-                        }
-                        else
+                        foreach (Serie i in serieService.ListarSeries())
                         {
-                            Console.WriteLine("Volte ao menu e adicione uma URL(link) para a série!");
+                            Console.WriteLine("\n\t {0} | {1} | {2} | {3} |", i.SerieID, i.SerieNome, i.SerieAvaliacao, i.SerieURL);
+                        }
+
+
+                        Console.ResetColor();
+                        int id = int.Parse(Console.ReadLine());
+                        try
+                        {
+                            Serie s = serieService.BuscarSerie(id);
+                            if (s.TemURL)
+                            {
+
+                                Process.Start(fileName: ConfigurationManager.AppSettings["SerieNavegador"], s.SerieURL);
+                                Thread.Sleep(3000);
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("\t\nAproveite sua série, até mais!");
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Thread.Sleep(2000);
+                                Console.WriteLine("\t\n ### DIO Series ###");
+                                Console.ResetColor();
+                                Environment.Exit(0);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Volte ao menu e adicione uma URL(link) para a série!");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
                         }
                     }
-                    catch(Exception e)
+                    else
                     {
-                        Console.WriteLine("Não foi possível realizar essa operação devido a: {0}", e.Message);
-                    }
-                    finally
-                    {
-
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\n\t Você ainda não possui séries cadastradas!");
+                        Console.ResetColor();
                         Console.WriteLine("\n\tDeseja retornar ao menu?(S/N)");
-                        var retorno = Console.ReadLine();
-                        menu = retorno.Contains('S') ? true : false;
-                        
+                        var retorno = Console.ReadLine().ToLower();
+                        menu = retorno.Contains('s') ? true : false;
                     }
+
                     break;
                 case 6:
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine("\n\t### Obrigado por utilizar a DIO Series ###");
+                    Console.ResetColor();
                     Environment.Exit(0);
                     break;
             }
