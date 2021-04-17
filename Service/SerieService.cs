@@ -3,13 +3,16 @@ using DIO.Projeto.Series.Repository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using System.Linq;
 
 namespace DIO.Projeto.Series.Service
 {
     public class SerieService
     {
+
         private IRepository<Serie> serieRepositorio;
+
+        private SerieContext _context = new SerieContext();         
         public SerieService(IRepository<Serie> repo)
         {
             serieRepositorio = repo;
@@ -47,6 +50,8 @@ namespace DIO.Projeto.Series.Service
             Console.WriteLine("\n\tInforme o que você deseja editar, por favor.");
             Console.WriteLine("\n\t[1] - Descrição da Série");
             Console.WriteLine("\n\t[2] - URL da Série");
+            Console.WriteLine("\n\t[3] - Habilitar Série");
+            Console.WriteLine("\n\t[4] - Desabilitar Série");
             
             int option = int.Parse(Console.ReadLine());
 
@@ -62,6 +67,14 @@ namespace DIO.Projeto.Series.Service
                     Console.WriteLine("\n\tColoque a nova URL\n");
                     var novaURL = Console.ReadLine();
                     item.SerieURL = novaURL;
+                    break;
+                
+                case 3: 
+                    item.SerieStatus = 1;
+                    break;
+                
+                case 4: 
+                    item.SerieStatus = 0;
                     break;
 
             }
@@ -79,6 +92,11 @@ namespace DIO.Projeto.Series.Service
             return serieRepositorio.ObterPorId(i);
         }
 
+        public List<Serie> BuscarSeriesDisponiveis(){
+            
+            return _context.Series.Where(s => s.SerieStatus == 1).Select(s => s).ToList();
+        
+        }
         public bool TemSeries()
         {
             return (ListarSeries() != null) ? true : false;

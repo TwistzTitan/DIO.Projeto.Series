@@ -121,7 +121,7 @@ namespace DIO.Projeto.Series.Domain
                             Console.ForegroundColor = ConsoleColor.Blue;
                             Console.WriteLine("\n\tID | Nome da Série | Avaliação | URL");
                             
-                            foreach (Serie i in serieService.ListarSeries())
+                            foreach (Serie i in serieService.BuscarSeriesDisponiveis())
                             {
                                 Console.WriteLine("\n\t {0} | {1} | {2} | {3} |", i.SerieID, i.SerieNome, i.SerieAvaliacao, i.SerieURL);
                             }
@@ -143,7 +143,6 @@ namespace DIO.Projeto.Series.Domain
                         var retorno = Console.ReadLine();
                         menu = retorno.Contains('S') ? true : false;
                     }
-                    
                     break;
                 case 3:
 
@@ -236,11 +235,12 @@ namespace DIO.Projeto.Series.Domain
                     break;
                 case 5:
                     Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Informe o numero da serie que você deseja abrir\n");
-                    Console.ForegroundColor = ConsoleColor.Blue;
                     if (serieService.TemSeries())
                     {
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("Informe o numero da serie que você deseja abrir\n");
+                        Console.ForegroundColor = ConsoleColor.Blue;
                         foreach (Serie i in serieService.ListarSeries())
                         {
                             Console.WriteLine("\n\t {0} | {1} | {2} | {3} |", i.SerieID, i.SerieNome, i.SerieAvaliacao, i.SerieURL);
@@ -284,9 +284,9 @@ namespace DIO.Projeto.Series.Domain
                         var retorno = Console.ReadLine().ToLower();
                         menu = retorno.Contains('s') ? true : false;
                     }
-
                     break;
                 case 6:
+                    Console.Clear();
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine("\n\t### Obrigado por utilizar a DIO Series ###");
                     Console.ResetColor();
